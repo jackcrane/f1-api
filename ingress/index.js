@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 const config = {
   driver: false,
@@ -11,6 +12,16 @@ const config = {
   driverSession: false,
   location: true,
 };
+
+// const config = {
+//   driver: true,
+//   country: true,
+//   circuit: true,
+//   meeting: true,
+//   session: true,
+//   driverSession: true,
+//   location: true,
+// };
 
 const translateDriverToModel = (driver) => {
   return {
@@ -297,9 +308,14 @@ const ingress = async () => {
                 } in session ${session.sessionKey}`
               );
             } else {
-              await prisma.location.create({
-                data: locationToUpsert,
-              });
+              // await prisma.location.create({
+              //   data: locationToUpsert,
+              // });
+              await prisma.$executeRaw`INSERT INTO location (id, driverKey, sessionKey, x, y, z, datetime) VALUES (${uuidv4()}, ${
+                driver.driverKey
+              }, ${session.sessionKey}, ${location.x}, ${location.y}, ${
+                location.z
+              }, ${new Date(location.date)})`;
               const endTime = new Date();
               console.log(
                 `[Driver: ${driverIterator}/${
