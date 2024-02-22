@@ -285,12 +285,12 @@ const ingress = async () => {
                 } | Location: ${locationIterator}/${locations.length}/${(
                   (locationIterator / locations.length) *
                   100
-                ).toFixed(4)}% | Total ${
+                ).toFixed(4)}% | Total ${(
                   (driverIterator / drivers.length) *
                   (sessionIterator / sessions.length) *
                   (locationIterator / locations.length) *
                   100
-                }%] [Row time ${
+                ).toFixed(5)}%] [Row time ${
                   endTime - startTime
                 }ms] Updated location for driver ${
                   driver.driverKey
@@ -309,12 +309,12 @@ const ingress = async () => {
                 } | Location: ${locationIterator}/${locations.length}/${(
                   (locationIterator / locations.length) *
                   100
-                ).toFixed(4)}% | Total ${
+                ).toFixed(4)}% | Total ${(
                   (driverIterator / drivers.length) *
                   (sessionIterator / sessions.length) *
                   (locationIterator / locations.length) *
                   100
-                }%] [Row time ${
+                ).toFixed(5)}%] [Row time ${
                   endTime - startTime
                 }ms] Created location for driver ${
                   driver.driverKey
@@ -332,5 +332,4 @@ const ingress = async () => {
     }
   }
 };
-
 ingress();
