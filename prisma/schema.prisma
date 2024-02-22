@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// Country model, holding information about the host country of a circuit
+model Country {
+  id String @unique @default(uuid())
+  countryKey Int @id
+  countryCode String
+  countryName String
+  circuit Circuit[]
+  driver Driver[]
+}
+
+/// Circuit model, holding information about the track, its location and meetings held there.
+model Circuit {
+  id String @unique @default(uuid())
+  circuitKey Int @id
+  shortName  String
+  location String?
+  gmtOffset String?
+  meeting Meeting[]
+  countryKey Int?
+  country Country? @relation(fields: [countryKey], references: [countryKey])
+}
+
+/// Meeting model, holding information about a Grand Prix or testing weekend and usually includes multiple sessions
+model Meeting {
+  id String @unique @default(uuid())
+  meetingKey Int @id
+  startDate DateTime
+  name String
+  longName String
+  year Int
+  circuitKey Int
+  circuit Circuit @relation(fields: [circuitKey], references: [circuitKey])
+  session Session[]
+}
+
+/// Driver model, holding information about the drivers and their teams
+model Driver {
+  id String @unique @default(uuid())
+  driverKey Int @id
+  firstName String
+  lastName String
+  fullName String
+  headshotUrl String?
+  acronym String
+  teamName String
+  teamColor String
+  countryKey Int?
+  country Country? @relation(fields: [countryKey], references: [countryKey])
+  location Location[]
+  carData CarData[]
+  session Session[]
+}
+
+/// Session model, holding information about the sessions held during a meeting. A session could be practice, qualifying, sprint, etc
+model Session {
+  id String @unique @default(uuid())
+  sessionKey Int @id
+  startDate DateTime
+  endDate DateTime
+  meetingKey Int
+  meeting Meeting @relation(fields: [meetingKey], references: [meetingKey])
+  sessionName String
+  sessionType String
+  location Location[]
+  carData CarData[]
+  drivers Driver[]
+}
+
+model Location {
+  id String @unique @default(uuid())
+  datetime DateTime
+  driverKey Int
+  driver Driver @relation(fields: [driverKey], references: [driverKey])
+  sessionKey Int
+  session Session @relation(fields: [sessionKey], references: [sessionKey])
+  x Int
+  y Int
+  z Int
+}
+
+model CarData {
+  id String @id @default(uuid())
+  driverKey Int
+  driver Driver @relation(fields: [driverKey], references: [driverKey])
+  sessionKey Int
+  session Session @relation(fields: [sessionKey], references: [sessionKey])
+  brake Int /// 0-100; percentage of brake applied
+  drs Int /// 0,1 = off; 8 = on but in wrong zone; 10,12,14 = on
+  gear Int /// 1-8; 0 = neutral;
+  rpm Int
+  speed Int /// km/h
+  throttle Int /// 0-100; percentage of engine power being used
+}
