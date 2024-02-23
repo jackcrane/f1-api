@@ -10,15 +10,22 @@ locationInfo = uicontrol('Style', 'text', 'Position', [10, 50, 580, 40], 'FontSi
 
 drawnow; % Force MATLAB to draw the UI components
 
+startSessionIndex = 1; % Start from session 3
+startDriverIndex = 1;  % Start from driver 7
+
 % Adjust the SQL query to focus on sessions and then join drivers
 sessions = fetch(conn, "SELECT s.sessionKey, s.sessionName, s.sessionType, s.startDate, s.endDate, m.name AS meetingName, json_group_array( json_object( 'driverKey', d.driverKey, 'firstName', d.firstName, 'lastName', d.lastName, 'fullName', d.fullName, 'headshotUrl', IFNULL(d.headshotUrl, ''), 'acronym', d.acronym, 'teamName', d.teamName, 'teamColor', d.teamColor, 'countryKey', IFNULL(d.countryKey, '') ) ) AS drivers FROM Session s JOIN Meeting m ON s.meetingKey = m.meetingKey JOIN _DriverToSession dts ON s.sessionKey = dts.B JOIN Driver d ON dts.A = d.driverKey GROUP BY s.sessionKey;");
 
 % Delete everything from the Location table
-exec(conn, "DELETE FROM Location;");
+% exec(conn, "DELETE FROM Location;");
 
 overallIterator = 1;
 % Iterate through each session
 for i = 1:height(sessions)
+    if i < startSessionIndex
+        continue; % Skip sessions until the starting session is reached
+    end
+
     sessionTable = sessions(i, :);
     % Convert the table to a struct
     session = table2struct(sessionTable);
@@ -30,6 +37,9 @@ for i = 1:height(sessions)
     % session.drivers is a string which is a JSON array of objects. Convert it to an array of structs
     drivers = jsondecode(session.drivers);
     for j = 1:length(drivers)
+        if i == startSessionIndex && j < startDriverIndex
+            continue; % Skip drivers in the starting session until the starting driver is reached
+        end
         overallIterator = overallIterator + 1;
         driver = drivers(j);
 
@@ -70,6 +80,7 @@ for i = 1:height(sessions)
 
             fprintf('Inserted Location (%d/%d) in %.3f ms\n', k, length(response), durationMs);
         end
+        startDriverIndex = 1; % Reset the starting driver index
     end
 end
 
