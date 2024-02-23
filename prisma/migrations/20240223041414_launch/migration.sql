@@ -59,7 +59,7 @@ CREATE TABLE "Session" (
 -- CreateTable
 CREATE TABLE "Location" (
     "id" TEXT NOT NULL,
-    "locationId" TEXT NOT NULL PRIMARY KEY,
+    "datetime" DATETIME NOT NULL,
     "driverKey" INTEGER NOT NULL,
     "sessionKey" INTEGER NOT NULL,
     "x" INTEGER NOT NULL,
@@ -85,12 +85,11 @@ CREATE TABLE "CarData" (
 );
 
 -- CreateTable
-CREATE TABLE "DriverInSession" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "driverKey" INTEGER NOT NULL,
-    "sessionKey" INTEGER NOT NULL,
-    CONSTRAINT "DriverInSession_driverKey_fkey" FOREIGN KEY ("driverKey") REFERENCES "Driver" ("driverKey") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "DriverInSession_sessionKey_fkey" FOREIGN KEY ("sessionKey") REFERENCES "Session" ("sessionKey") ON DELETE RESTRICT ON UPDATE CASCADE
+CREATE TABLE "_DriverToSession" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL,
+    CONSTRAINT "_DriverToSession_A_fkey" FOREIGN KEY ("A") REFERENCES "Driver" ("driverKey") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "_DriverToSession_B_fkey" FOREIGN KEY ("B") REFERENCES "Session" ("sessionKey") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateIndex
@@ -112,4 +111,7 @@ CREATE UNIQUE INDEX "Session_id_key" ON "Session"("id");
 CREATE UNIQUE INDEX "Location_id_key" ON "Location"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "DriverInSession_id_key" ON "DriverInSession"("id");
+CREATE UNIQUE INDEX "_DriverToSession_AB_unique" ON "_DriverToSession"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_DriverToSession_B_index" ON "_DriverToSession"("B");
