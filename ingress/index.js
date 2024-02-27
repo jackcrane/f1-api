@@ -3,25 +3,27 @@ const prisma = new PrismaClient();
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
-const config = {
-  driver: false,
-  country: false,
-  circuit: false,
-  meeting: false,
-  session: false,
-  driverSession: false,
-  location: true,
-};
+await prisma.$queryRaw`CREATE INDEX idx_location_driverkey_datetime_sessionkey ON Location(driverKey, datetime DESC, sessionKey);`;
 
 // const config = {
-//   driver: true,
-//   country: true,
-//   circuit: true,
-//   meeting: true,
-//   session: true,
-//   driverSession: true,
+//   driver: false,
+//   country: false,
+//   circuit: false,
+//   meeting: false,
+//   session: false,
+//   driverSession: false,
 //   location: true,
 // };
+
+const config = {
+  driver: true,
+  country: true,
+  circuit: true,
+  meeting: true,
+  session: true,
+  driverSession: true,
+  location: false,
+};
 
 const translateDriverToModel = (driver) => {
   return {

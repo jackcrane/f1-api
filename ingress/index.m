@@ -1,4 +1,4 @@
-conn = sqlite("../prisma/dev.db");
+conn = sqlite("../prisma/dev-demo.db");
 
 % Create a figure for the UI
 uiFig = figure('Name', 'Session Progress', 'Position', [100, 100, 600, 200], 'NumberTitle', 'off');
@@ -14,7 +14,7 @@ startSessionIndex = 1; % Start from session 3
 startDriverIndex = 1;  % Start from driver 7
 
 % Adjust the SQL query to focus on sessions and then join drivers
-sessions = fetch(conn, "SELECT s.sessionKey, s.sessionName, s.sessionType, s.startDate, s.endDate, m.name AS meetingName, json_group_array( json_object( 'driverKey', d.driverKey, 'firstName', d.firstName, 'lastName', d.lastName, 'fullName', d.fullName, 'headshotUrl', IFNULL(d.headshotUrl, ''), 'acronym', d.acronym, 'teamName', d.teamName, 'teamColor', d.teamColor, 'countryKey', IFNULL(d.countryKey, '') ) ) AS drivers FROM Session s JOIN Meeting m ON s.meetingKey = m.meetingKey JOIN _DriverToSession dts ON s.sessionKey = dts.B JOIN Driver d ON dts.A = d.driverKey GROUP BY s.sessionKey;");
+sessions = fetch(conn, "SELECT s.sessionKey, s.sessionName, s.sessionType, s.startDate, s.endDate, m.name AS meetingName, json_group_array( json_object( 'driverKey', d.driverKey, 'firstName', d.firstName, 'lastName', d.lastName, 'fullName', d.fullName, 'headshotUrl', IFNULL(d.headshotUrl, ''), 'acronym', d.acronym, 'teamName', d.teamName, 'teamColor', d.teamColor, 'countryKey', IFNULL(d.countryKey, '') ) ) AS drivers FROM Session s JOIN Meeting m ON s.meetingKey = m.meetingKey JOIN _DriverToSession dts ON s.sessionKey = dts.B JOIN Driver d ON dts.A = d.driverKey WHERE s.meetingKey = 1222 GROUP BY s.sessionKey;");
 
 % Delete everything from the Location table
 % exec(conn, "DELETE FROM Location;");

@@ -36,7 +36,7 @@ model Circuit {
 model Meeting {
   id String @unique @default(uuid())
   meetingKey Int @id
-  startDate DateTime
+  startDate BigInt
   name String
   longName String
   year Int
@@ -67,8 +67,8 @@ model Driver {
 model Session {
   id String @unique @default(uuid())
   sessionKey Int @id
-  startDate DateTime
-  endDate DateTime
+  startDate BigInt
+  endDate BigInt
   meetingKey Int
   meeting Meeting @relation(fields: [meetingKey], references: [meetingKey])
   sessionName String
@@ -80,7 +80,7 @@ model Session {
 
 model Location {
   id String @unique @default(uuid())
-  datetime DateTime
+  datetime String
   driverKey Int
   driver Driver @relation(fields: [driverKey], references: [driverKey])
   sessionKey Int
